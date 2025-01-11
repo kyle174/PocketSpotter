@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 import Benchpress
-import RightBicep
+import BicepCurl
 
 app = Flask(__name__)
 
@@ -21,9 +21,9 @@ def set_exercise():
     exercise_type = request.form['exercise']
     return redirect(url_for('index'))
 
-@app.route('/RightBicep')
-def show_right_bicep():
-    return Response(RightBicep.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/BicepCurl')
+def show_bicep_curl():
+    return Response(BicepCurl.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/Benchpress')
 def show_benchpress():
