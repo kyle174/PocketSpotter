@@ -1,8 +1,9 @@
-from flask import Flask, Response, render_template, request, redirect, url_for
+from flask import Flask, Response, render_template, request, redirect, url_for, send_from_directory
 import cv2
 import mediapipe as mp
 import numpy as np
 import time
+import os
 
 import Benchpress
 import BicepCurl
@@ -15,6 +16,11 @@ exercise_type = ""
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/set_exercise', methods=['POST'])
 def set_exercise():
