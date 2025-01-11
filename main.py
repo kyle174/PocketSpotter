@@ -32,17 +32,22 @@ def show_benchpress():
     exercise_type = 'benchpress'
     return render_template('benchpress.html')
 
+@app.route('/Squat')
+def show_squat():
+    global exercise_type
+    exercise_type = 'squat'
+    return render_template('squat.html')
+
 @app.route('/video_feed')
 def video_feed():
     if exercise_type == "bicep_curl":
         return Response(BicepCurl.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif exercise_type == 'benchpress':
         return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    elif exercise_type == 'squat':
+        return Response(Squat.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return "Invalid URL", 404
 
-@app.route('/Squat')
-def show_squat():
-    return Response(Squat.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 if __name__ == "__main__":
     app.run(debug=True)
