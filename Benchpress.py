@@ -63,6 +63,25 @@ def generate_frames():
             try:
                 landmarks = results.pose_landmarks.landmark
 
+                required_landmarks = [
+                    mp_pose.PoseLandmark.LEFT_SHOULDER,
+                    mp_pose.PoseLandmark.LEFT_ELBOW,
+                    mp_pose.PoseLandmark.LEFT_WRIST,
+                    mp_pose.PoseLandmark.RIGHT_SHOULDER, 
+                    mp_pose.PoseLandmark.RIGHT_ELBOW,
+                    mp_pose.PoseLandmark.RIGHT_WRIST
+                ]
+                if not all(landmarks[lm.value].visibility > 0.5 for lm in required_landmarks):
+                    cv2.putText(image, "Ensure full body is visible!", (50, 50),
+                                cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                    # Skip this frame
+                    ret, buffer = cv2.imencode('.jpg', image)
+                    if not ret:
+                        break
+                    yield (b'--frame\r\n'
+                        b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+                    continue
+
                 left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                 left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
                 left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
