@@ -38,7 +38,6 @@ def calculate_angle(a, b, c, image):
     cv2.circle(image, (x2,y2), 15, (0, 0, 255), 2)
     cv2.circle(image, (x3,y3), 10, (0, 0, 255), cv2.FILLED)
     cv2.circle(image, (x3,y3), 15, (0, 0, 255), 2)
-    cv2.putText(image, str(int(angle)), (x2+20, y2+50), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
 
     return angle
 
@@ -47,7 +46,7 @@ def generate_frames():
 
     cap = cv2.VideoCapture(0)
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        while True:
+        while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
