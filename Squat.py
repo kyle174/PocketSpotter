@@ -71,14 +71,35 @@ def generate_frames():
             try:
                 landmarks = results.pose_landmarks.landmark
 
+                # Check visibility for all required landmarks
+                required_landmarks = [
+                    mp_pose.PoseLandmark.LEFT_HIP,
+                    mp_pose.PoseLandmark.LEFT_SHOULDER,
+                    mp_pose.PoseLandmark.LEFT_KNEE,
+                    mp_pose.PoseLandmark.LEFT_ANKLE
+                ]
+                if not all(landmarks[lm.value].visibility > 0.5 for lm in required_landmarks):
+                    cv2.putText(image, "Ensure full body is visible!", (50, 50),
+                                cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                    # Skip this frame
+                    ret, buffer = cv2.imencode('.jpg', image)
+                    if not ret:
+                        break
+                    yield (b'--frame\r\n'
+                        b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+                    continue
+
+                # Get coordinates
                 hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
                 shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                 knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
                 ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
+                # Calculate angles
                 hip_angle = calculate_angle(shoulder, hip, knee, image)
                 knee_angle = calculate_angle(hip, knee, ankle, image)
 
+                # Check form validity and perform rep counting as usual
                 if not is_valid_form(hip_angle, knee_angle):
                     feedback = ""
                     color = (0, 255, 0)
@@ -89,15 +110,14 @@ def generate_frames():
                         feedback = "Don't bend your knees as much!"
                         color = (0, 0, 255)
 
-                        
-                        cv2.putText(image, feedback, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-                
+                    cv2.putText(image, feedback, (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1, color, 2, cv2.LINE_AA)
                 else:
                     if hip_angle > 160:
                         stage = "down"
                     if hip_angle < 68 and stage == 'down':
                         current_time = time.time()
                         if current_time - last_rep_time < 5:
+                            # Draw warning
                             pp1 = (565, 170) 
                             pp2 = (625, 170) 
                             pp3 = (595, 120) 
@@ -114,9 +134,9 @@ def generate_frames():
                             counter += 1
                             last_rep_time = current_time
                             print(f"Rep Counted! Total Reps: {counter}")
-
             except Exception as e:
                 print(e)
+
 
             cv2.rectangle(image, (545,0), (665, 105), (126,115,101), -1)
             cv2.rectangle(image, (550,0), (650, 100), (186,173,167), -1)
