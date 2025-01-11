@@ -14,7 +14,7 @@ counter = 0
 stage = None
 last_rep_time = 0
 
-def right_bicep_generate_frames():
+def generate_frames():
     global counter, stage, last_rep_time
 
     cap = cv2.VideoCapture(0)

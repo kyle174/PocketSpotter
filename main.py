@@ -23,11 +23,11 @@ def set_exercise():
 
 @app.route('/RightBicep')
 def show_right_bicep():
-    return Response(RightBicep.right_bicep_generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(RightBicep.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/Benchpress')
 def show_benchpress():
-    return Response(Benchpress.generate_frames_bench(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
     app.run(debug=True)
