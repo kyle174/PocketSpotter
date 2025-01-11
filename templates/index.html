@@ -1,76 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PocketSpotter</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #444;
-        }
-        .video-container {
-            border: 5px solid #333;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-        }
-        img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-        footer {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        a {
-            color: #333;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .dropdown {
-            margin-bottom: 1rem;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #444;
+      }
+      .video-container {
+        border: 5px solid #333;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      footer {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #666;
+      }
+      a {
+        color: #333;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .dropdown {
+        margin-bottom: 1rem;
+      }
     </style>
     <script>
-        function redirectToExercisePage() {
-            const exercise = document.getElementById('exercise').value;
-            window.location.href = '/' + exercise;
-        }
+      function redirectToExercisePage() {
+        const exercise = document.getElementById("exercise").value;
+        window.location.href = "/" + exercise;
+      }
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Curl Counter</h1>
     <form onsubmit="event.preventDefault(); redirectToExercisePage();">
-        <div class="dropdown">
-            <label for="exercise">Choose an exercise:</label>
-            <select id="exercise" name="exercise">
-                <option value="BicepCurl">Bicep Curl</option>
-                <option value="Benchpress">Bench Press</option>
-            </select>
-        </div>
-        <button type="submit">Submit</button>
+      <div class="dropdown">
+        <label for="exercise">Choose an exercise:</label>
+        <select id="exercise" name="exercise">
+          <option value="BicepCurl">Bicep Curl</option>
+          <option value="Benchpress">Bench Press</option>
+          <option value="Squat">Squat</option>
+        </select>
+      </div>
+      <button type="submit">Submit</button>
     </form>
     <footer>
-        Created by <a href="https://better-everyday.github.io" target="_blank">Michael Roberts</a>
+      Created by
+      <a href="https://better-everyday.github.io" target="_blank"
+        >Michael Roberts</a
+      >
     </footer>
-</body>
+  </body>
 </html>

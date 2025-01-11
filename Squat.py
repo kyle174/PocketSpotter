@@ -13,6 +13,15 @@ counter = 0
 stage = None
 last_rep_time = 0
 
+
+def is_valid_form(hip_angle, knee_angle):
+    # Example relationship: If hip_angle decreases, knee_angle should decrease proportionally
+    angle_difference = 18
+    if (hip_angle - knee_angle) < angle_difference and (hip_angle - knee_angle) > -angle_difference:
+        return True
+    else:    
+        return False
+
 def calculate_angle(a, b, c, image):
     h, w, _ = image.shape 
 
@@ -67,11 +76,22 @@ def generate_frames():
                 knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
                 ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
-                hip_angle = calculate_angle(shoulder, hip, knee)
-                knee_angle = calculate_angle(hip, knee, ankle)
+                hip_angle = calculate_angle(shoulder, hip, knee, image)
+                knee_angle = calculate_angle(hip, knee, ankle, image)
 
                 if not is_valid_form(hip_angle, knee_angle):
-                    cv2.putText(image, "Bad Form!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                    feedback = ""
+                    color = (0, 255, 0)
+                    if hip_angle < (18 + knee_angle):
+                        feedback = "Don't lean too far forward!"
+                        color = (0, 0, 255)
+                    if knee_angle < (18 + hip_angle):
+                        feedback = "Don't bend your knees as much!"
+                        color = (0, 0, 255)
+
+                        
+                        cv2.putText(image, feedback, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+                
                 else:
                     if hip_angle > 160:
                         stage = "down"

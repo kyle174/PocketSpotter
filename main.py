@@ -6,6 +6,7 @@ import time
 
 import Benchpress
 import BicepCurl
+import Squat
 
 app = Flask(__name__)
 
@@ -29,5 +30,8 @@ def show_bicep_curl():
 def show_benchpress():
     return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/Squat')
+def show_squat():
+    return Response(Squat.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 if __name__ == "__main__":
     app.run(debug=True)
