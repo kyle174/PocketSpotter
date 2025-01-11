@@ -9,7 +9,7 @@ import BicepCurl
 
 app = Flask(__name__)
 
-exercise_type = "bicep_curl"
+exercise_type = ""
 
 @app.route('/')
 def index():
@@ -17,17 +17,28 @@ def index():
 
 @app.route('/set_exercise', methods=['POST'])
 def set_exercise():
-    global exercise_type
-    exercise_type = request.form['exercise']
     return redirect(url_for('index'))
 
 @app.route('/BicepCurl')
 def show_bicep_curl():
-    return Response(BicepCurl.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    global exercise_type
+    exercise_type = 'bicep_curl'
+    return render_template('bicep_curl.html')
 
 @app.route('/Benchpress')
 def show_benchpress():
-    return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    global exercise_type
+    exercise_type = 'benchpress'
+    return render_template('benchpress.html')
+
+@app.route('/video_feed')
+def video_feed():
+    if exercise_type == "bicep_curl":
+        return Response(BicepCurl.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    elif exercise_type == 'benchpress':
+        return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    else:
+        return "Invalid URL", 404
 
 if __name__ == "__main__":
     app.run(debug=True)
