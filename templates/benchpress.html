@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketSpotter</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans';
+            margin: 0;
+            padding: 0;
+            background-color: #1b283b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ECDFCC;
+        }
+        .video-container {
+            border: 5px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        nav {
+            margin-top: 20px;
+        }
+        nav a {
+            color: #ECDFCC;
+            text-decoration: none;
+            padding: 50px;
+        }
+    </style>
+    <script>
+        function redirectToExercisePage(exercise) {
+            window.location.href = '/' + exercise;
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/BicepCurl">Bicep Curl</a>
+        <a href="/Benchpress">Bench Press</a>
+        <a href="/squat">Squat</a>
+    </nav>
+    <h1>Press Spotter</h1>
+    <div class="video-container">
+        <img src="{{ url_for('video_feed') }}" alt="Video Stream">
+    </div>
+</body>
+</html>
