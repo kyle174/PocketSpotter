@@ -1,13 +1,9 @@
 from flask import Flask, Response, render_template, request, redirect, url_for, send_from_directory
-import cv2
-import mediapipe as mp
-import numpy as np
-import time
 import os
 
-import Benchpress
-import BicepCurl
-import Squat
+from services import Benchpress
+from services import BicepCurl
+from services import Squat
 
 app = Flask(__name__)
 
