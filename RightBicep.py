@@ -3,6 +3,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time
+import angle
 
 app = Flask(__name__)
 
@@ -13,36 +14,7 @@ counter = 0
 stage = None
 last_rep_time = 0
 
-def calculate_angle(a, b, c, image):
-    h, w, _ = image.shape 
-
-    x1, y1 = int(a[0] * w), int(a[1] * h)
-    x2, y2 = int(b[0] * w), int(b[1] * h)
-    x3, y3 = int(c[0] * w), int(c[1] * h)
-
-    a = np.array(a)  
-    b = np.array(b)  
-    c = np.array(c)  
-
-    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
-    angle = np.abs(radians * 180.0 / np.pi)
-
-    if angle > 180.0:
-        angle = 360 - angle
-
-    cv2.line(image, (x1,y1), (x2,y2), (255,255,255), 3)
-    cv2.line(image, (x3,y3), (x2,y2), (255,255,255), 3)
-    cv2.circle(image, (x1,y1), 10, (0, 0, 255), cv2.FILLED)
-    cv2.circle(image, (x1,y1), 15, (0, 0, 255), 2)
-    cv2.circle(image, (x2,y2), 10, (0, 0, 255), cv2.FILLED)
-    cv2.circle(image, (x2,y2), 15, (0, 0, 255), 2)
-    cv2.circle(image, (x3,y3), 10, (0, 0, 255), cv2.FILLED)
-    cv2.circle(image, (x3,y3), 15, (0, 0, 255), 2)
-    cv2.putText(image, str(int(angle)), (x2+20, y2+50), cv2.FONT_HERSHEY_TRIPLEX, 2, (0, 0, 255), 2)
-
-    return angle
-
-def generate_frames():
+def right_bicep_generate_frames():
     global counter, stage, last_rep_time
 
     cap = cv2.VideoCapture(0)
@@ -70,14 +42,14 @@ def generate_frames():
                 rwrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
                           landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
 
-                angle = calculate_angle(rshoulder, relbow, rwrist, image)
+                right_angle = angle.calculate_angle(rshoulder, relbow, rwrist, image)
 
                 feedback = ""
                 color = (0, 255, 0)
-                if angle < 30:
+                if right_angle < 30:
                     feedback = "Don't curl too far up!"
                     color = (0, 0, 255)
-                elif angle > 150:
+                elif right_angle > 150:
                     feedback = "Complete the curl!"
                     color = (0, 0, 255)
                 else:
@@ -86,10 +58,10 @@ def generate_frames():
 
                 cv2.putText(image, feedback, (150, 50), cv2.FONT_HERSHEY_DUPLEX, 1, color, 2, cv2.LINE_AA)
 
-                if angle > 150:
+                if right_angle > 150:
                     stage = "down"
                     start_time = time.time() 
-                if angle < 50 and stage == "down":
+                if right_angle < 50 and stage == "down":
                     current_time = time.time()
                     if current_time - last_rep_time < 3:
                         pp1 = (565, 170) 
@@ -128,14 +100,3 @@ def generate_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
     cap.release()
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == "__main__":
-    app.run(debug=True)

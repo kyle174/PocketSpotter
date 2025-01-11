@@ -4,40 +4,11 @@ import mediapipe as mp
 import numpy as np
 import time
 import statistics
+import angle
 
-app = Flask(__name__)
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-
-def calculate_angle(a, b, c, image):
-    h, w, _ = image.shape  # Height and width of the image
-
-    # Scale normalized coordinates to pixel values
-    x1, y1 = int(a[0] * w), int(a[1] * h)
-    x2, y2 = int(b[0] * w), int(b[1] * h)
-    x3, y3 = int(c[0] * w), int(c[1] * h)
-
-    a = np.array(a)  # First
-    b = np.array(b)  # Mid
-    c = np.array(c)  # End
-
-    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
-    angle = np.abs(radians * 180.0 / np.pi)
-
-    if angle > 180.0:
-        angle = 360 - angle
-
-    cv2.line(image, (x1, y1), (x2, y2), (255, 255, 255), 3)
-    cv2.line(image, (x3, y3), (x2, y2), (255, 255, 255), 3)
-    cv2.circle(image, (x1, y1), 10, (0, 0, 255), cv2.FILLED)
-    cv2.circle(image, (x1, y1), 15, (0, 0, 255), 2)
-    cv2.circle(image, (x2, y2), 10, (0, 0, 255), cv2.FILLED)
-    cv2.circle(image, (x2, y2), 15, (0, 0, 255), 2)
-    cv2.circle(image, (x3, y3), 10, (0, 0, 255), cv2.FILLED)
-    cv2.circle(image, (x3, y3), 15, (0, 0, 255), 2)
-
-    return angle
 
 # Define inbalanced_state globally to persist its value across calls
 inbalanced_state = 0
@@ -85,7 +56,7 @@ def determine_bench_form(left_angles, right_angles, timestamps):
         elif abs(left_mean - right_mean) <= 25 and inbalanced_state == 1:
             inbalanced_state = 0  # Reset the state when the imbalance is corrected
 
-def generate_frames():
+def generate_frames_bench():
     cap = cv2.VideoCapture(0)
 
     # Curl counter variables
@@ -133,8 +104,8 @@ def generate_frames():
                                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
 
                 # Calculate angle
-                left_angle = calculate_angle(left_shoulder, left_elbow, left_wrist, image)
-                right_angle = calculate_angle(right_shoulder, right_elbow, right_wrist, image)
+                left_angle = angle.calculate_angle(left_shoulder, left_elbow, left_wrist, image)
+                right_angle = angle.calculate_angle(right_shoulder, right_elbow, right_wrist, image)
 
                 # Append angles to lists
                 left_angles.append(left_angle)
@@ -185,26 +156,3 @@ def generate_frames():
 
     cap.release()
 
-@app.route('/')
-def index():
-    return render_template_string('''
-        <!doctype html>
-        <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <title>Bench Press Form Detection</title>
-          </head>
-          <body>
-            <h1>Bench Press Form Detection</h1>
-            <img src="{{ url_for('video_feed') }}">
-          </body>
-        </html>
-    ''')
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == '__main__':
-    app.run(debug=True)
