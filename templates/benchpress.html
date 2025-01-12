@@ -6,15 +6,111 @@
     <title>PocketSpotter</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/exercise_spotter.css') }}">
     <script>
-        function openNav() {
-            document.getElementById("myNav").style.width = "250px";
-            document.getElementById("openBtn").classList.add("hidden"); // Hide the "Exercises" button
-        }
 
-        function closeNav() {
-            document.getElementById("myNav").style.width = "0";
-            document.getElementById("openBtn").classList.remove("hidden"); // Show the "Exercises" button
+function openNav() {
+    document.getElementById("myNav").style.width = "250px";  // Adjust width as needed
+    document.getElementById("openBtn").classList.add("hidden");  // Hide the open button when menu is open
+}
+
+function closeNav() {
+    document.getElementById("myNav").style.width = "0";
+    document.getElementById("openBtn").classList.remove("hidden");  // Show the open button when menu is closed
+}
+
+
+let isSetActive = false; // Tracks the state of the set
+let timerInterval; // Stores the timer interval to clear it when needed
+let timer = 120; // Initial timer value
+
+function toggleSet() {
+    const button = document.getElementById("toggleSetBtn");
+    const restButton = document.getElementById("restBtn");
+
+    if (!isSetActive) {
+        // Start set
+        button.innerHTML = "End Set";
+        isSetActive = true;
+
+        // Hide the rest button during the set
+        restButton.style.display = "none";
+        
+        // Reset rep counter when a new set starts
+        fetch('/end_set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ exercise_type: 'benchpress' })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("Counter reset successfully on the server.");
+            } else {
+                console.error("Failed to reset the counter on the server.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+
+        console.log("Set started");
+    } else {
+        // End set
+        button.innerHTML = "Start Set";
+        isSetActive = false;
+
+        // Show and enable the rest button
+        restButton.style.display = "inline-block";
+        restButton.disabled = false;
+
+        // Reset the timer
+        resetTimer();
+
+        // Send a request to reset the counter
+        fetch('/end_set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ exercise_type: 'benchpress' })
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Counter reset successfully on the server.");
+                } else {
+                    console.error("Failed to reset the counter on the server.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
+}
+
+function startRestTimer() {
+    const restButton = document.getElementById("restBtn");
+    restButton.disabled = true;
+    restButton.classList.add("disabled"); // Add disabled class for styling
+
+    timerInterval = setInterval(function() {
+        var minutes = Math.floor(timer / 60);
+        var seconds = timer % 60;
+        restButton.innerHTML = minutes + "m " + (seconds < 10 ? "0" : "") + seconds + "s";
+        timer--;
+
+        if (timer < 0) {
+            clearInterval(timerInterval);
+            restButton.innerHTML = "Reset Timer";
+            restButton.disabled = false;
+            restButton.classList.remove("disabled"); // Remove the disabled styling
         }
+    }, 1000);
+}
+
+function resetTimer() {
+    // Reset the timer and clear the interval
+    timer = 120;
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    const restButton = document.getElementById("restBtn");
+    restButton.innerHTML = "Rest Timer"; // Reset the button text
+    restButton.classList.remove("disabled"); // Remove the disabled styling
+}
+
     </script>
 </head>
 <body>
@@ -33,6 +129,10 @@
     <div class="video-container">
         <img src="{{ url_for('video_feed') }}" alt="Video Stream">
     </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="toggleSetBtn" onclick="toggleSet()" style="padding: 10px 20px; font-size: 1rem;">Start Set</button>
+        <button id="restBtn" onclick="startRestTimer()" style="padding: 10px 20px; font-size: 1rem; display: none;">Rest Timer</button>
+    </div>
     <div id="myNav" class="hamburger-menu">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="/BicepCurl">Bicep Curl</a>
@@ -41,42 +141,4 @@
         <a href="/Pushups">Pushups</a>
     </div>
 </body>
-<script>
-    function toggleSet() {
-        var button = document.getElementById("toggleSetBtn");
-        if (button.innerHTML === "Start Set") {
-            document.querySelectorAll('#restBtn').forEach(e => e.remove());
-            button.innerHTML = "End Set";
-        } else {
-            document.querySelectorAll('#restBtn').forEach(e => e.remove());
-            button.innerHTML = "Start Set";
-            var restButton = document.createElement("button");
-            restButton.id = "restBtn";
-            restButton.innerHTML = "Start 2min Rest";
-            restButton.style = button.style.cssText;
-            restButton.onclick = startRestTimer;
-            button.parentNode.appendChild(restButton);
-        }
-    }
-
-    function startRestTimer() {
-        var restButton = document.getElementById("restBtn");
-        restButton.disabled = true;
-        var timer = 120;
-        var interval = setInterval(function() {
-            var minutes = Math.floor(timer / 60);
-            var seconds = timer % 60;
-            restButton.innerHTML = minutes + "m " + (seconds < 10 ? "0" : "") + seconds + "s";
-            timer--;
-            if (timer < 0) {
-                clearInterval(interval);
-                restButton.innerHTML = "Reset Timer";
-                restButton.disabled = false;
-            }
-        }, 1000);
-    }
-</script>
-<div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
-    <button id="toggleSetBtn" onclick="toggleSet()">Start Set</button>
-</div>
 </html>

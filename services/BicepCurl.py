@@ -42,7 +42,7 @@ def calculate_angle(a, b, c, image):
 
     return angle
 
-def generate_frames():
+def generate_frames(state):
     global counter, stage, last_rep_time
 
     cap = cv2.VideoCapture(0)
@@ -131,6 +131,8 @@ def generate_frames():
                         last_rep_time = current_time
                         print(f"Rep Counted! Total Reps: {counter}")
 
+                    if state:
+                        counter = 0
                         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
                         log_rep_to_csv(csv_file, "Bicep Curls", counter, timestamp)
                         print(f"Squat rep {counter} logged at {timestamp}")
