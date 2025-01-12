@@ -133,9 +133,9 @@ def generate_frames(state):
                         if state:
                             counter = 0
 
-                            #timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-                            #log_rep_to_csv(csv_file, "Squat", counter, timestamp)
-                            #print(f"Squat rep {counter} logged at {timestamp}")
+                            timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+                            log_rep_to_csv(csv_file, "Squat", counter, timestamp)
+                            print(f"Squat rep {counter} logged at {timestamp}")
             except Exception as e:
                 print(e)
 
