@@ -52,6 +52,8 @@ def generate_frames():
             if not ret:
                 break
 
+            frame = cv2.flip(frame, 1)
+
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             image.flags.writeable = False
 
@@ -72,9 +74,8 @@ def generate_frames():
                     mp_pose.PoseLandmark.RIGHT_WRIST
                 ]
                 if not all(landmarks[lm.value].visibility > 0.5 for lm in required_landmarks):
-                    cv2.putText(image, "Ensure full body is visible!", (50, 50),
-                                cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-                    # Skip this frame
+                    cv2.putText(image, "Ensure full body is visible!", (100, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5, cv2.LINE_AA)
+                    cv2.putText(image, "Ensure full body is visible!", (100, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
                     ret, buffer = cv2.imencode('.jpg', image)
                     if not ret:
                         break
@@ -123,11 +124,9 @@ def generate_frames():
                         triangle = np.array([pp1, pp2, pp3], np.int32)
                         cv2.fillPoly(image, [triangle], (3, 186, 252))
                         cv2.polylines(image, [triangle], isClosed=True, color=(0, 0, 0), thickness=2)
-
-                        cv2.putText(image, '!', (588,163), 
-                                    cv2.FONT_HERSHEY_DUPLEX, 1.25, (0,0,0), 1, cv2.LINE_AA)
-                        cv2.putText(image, 'SLOW!', (572,190), 
-                                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (3, 186, 252), 1, cv2.LINE_AA)
+                        cv2.putText(image, '!', (588,163), cv2.FONT_HERSHEY_DUPLEX, 1.25, (0,0,0), 1, cv2.LINE_AA)
+                        cv2.putText(image, 'SLOW!', (572,190), cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 0), 3, cv2.LINE_AA)
+                        cv2.putText(image, 'SLOW!', (572,190), cv2.FONT_HERSHEY_DUPLEX, 0.5, (3, 186, 252), 1, cv2.LINE_AA)
                     else:
                         stage = "down"
                         counter += 1
@@ -137,15 +136,15 @@ def generate_frames():
             except Exception as e:
                 print(e)
 
-            cv2.rectangle(image, (545,0), (665, 105), (126,115,101), -1)
+            cv2.rectangle(image, (545,0), (665, 105), (51,51,51), -1)
             cv2.rectangle(image, (550,0), (650, 100), (186,173,167), -1)
-            
-            cv2.putText(image, 'REPS', (580,20), 
-                        cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(image, 'REPS', (575,20), cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
             if counter < 10:
-                cv2.putText(image, str(counter), (580,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (575,80), cv2.FONT_HERSHEY_DUPLEX, 2, (0,0,0), 5, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (575,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
             else:
-                cv2.putText(image, str(counter), (550,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (545,80), cv2.FONT_HERSHEY_DUPLEX, 2, (0,0,0), 5, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (545,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
 
             ret, buffer = cv2.imencode('.jpg', image)
             if not ret:
