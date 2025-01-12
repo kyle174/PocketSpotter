@@ -44,7 +44,7 @@ def calculate_angle(a, b, c, image):
 
     return angle
 
-def generate_frames():
+def generate_frames(state):
     global counter, stage, last_rep_time
     left_angles = []
     right_angles = []
@@ -117,7 +117,7 @@ def generate_frames():
                 
                 if left_angle > 150 and right_angle > 150 and stage != "up":
                     stage = "down"
-                if left_angle < 50 and stage == "down":
+                if left_angle < 100 and right_angle<100 and stage == "down":
                     stage = "up"
                     start_time = time.time() 
                 if left_angle > 150 and right_angle > 150 and stage == "up":
@@ -137,6 +137,8 @@ def generate_frames():
                         counter += 1
                         last_rep_time = current_time
                         print(f"Rep Counted! Total Reps: {counter}")
+                    if state:
+                        counter = 0
 
                         #timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
                         #log_rep_to_csv(csv_file, "Bench Press", counter, timestamp)
@@ -159,6 +161,6 @@ def generate_frames():
             if not ret:
                 break
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+                b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
     cap.release()

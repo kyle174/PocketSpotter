@@ -62,39 +62,15 @@ def update_rest_state():
 def video_feed():
     global is_resting
     if exercise_type == "bicep_curl":
-        return Response(BicepCurl.generate_frames(is_resting), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(BicepCurl.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif exercise_type == 'benchpress':
         return Response(Benchpress.generate_frames(is_resting), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif exercise_type == 'squat':
-        return Response(Squat.generate_frames(is_resting), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(Squat.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif exercise_type == 'pushups':
-        return Response(Benchpress.generate_frames(is_resting), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return "Invalid URL", 404
-    
-
-    
-@app.route('/end_set', methods=['POST'])
-def end_set():
-    """ 
-    This endpoint updates the counter in the specific exercise module when a set ends.
-    """
-    from services import Benchpress, BicepCurl  # Ensure we import the Benchpress module
-
-    data = request.get_json()
-    if data:
-        if data.get('exercise_type') == 'benchpress':
-            Benchpress.counter = 0  # Reset the counter for Bench Press
-            print("Counter reset for Bench Press.")
-            return "Success", 200
-        if data.get('exercise_type') == 'bicep_curl':
-            BicepCurl.counter = 0  # Reset the counter for Bicep Curl
-            print("Counter reset for Bicep Curl.")
-            return "Success", 200
-    return "Invalid Request", 400
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
