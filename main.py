@@ -34,6 +34,12 @@ def show_benchpress():
     exercise_type = 'benchpress'
     return render_template('benchpress.html')
 
+@app.route('/Pushups')
+def show_pushup():
+    global exercise_type
+    exercise_type = 'pushups'
+    return render_template('pushups.html')
+
 @app.route('/Squat')
 def show_squat():
     global exercise_type
@@ -48,6 +54,8 @@ def video_feed():
         return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif exercise_type == 'squat':
         return Response(Squat.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    elif exercise_type == 'pushups':
+        return Response(Benchpress.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return "Invalid URL", 404
 
