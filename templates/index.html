@@ -10,8 +10,8 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1b283b;
-            color: #ECDFCC;
+            background-color: #506a70;
+            color: #F4EDD3;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,7 +20,7 @@
         }
         h1 {
             font-size: 2rem;
-            color: #ECDFCC;
+            color: #F4EDD3;
         }
         .video-container {
             border: 5px solid #333;
@@ -41,7 +41,7 @@
             color: #666;
         }
         a {
-            color: #ECDFCC;
+            color: #F4EDD3;
             text-decoration: none;
         }
         a:hover {
@@ -51,23 +51,23 @@
             margin-bottom: 1rem;
         }
         text {
-            color: #ECDFCC;
+            color: #F4EDD3;
         }
         button {
             padding: 0.3rem 0.7rem;
             font-size: 0.7rem;
-            background-color: #1b283b;
-            color: #ECDFCC;
-            border: 2px solid #ECDFCC;
+            background-color: #506a70;
+            color: #F4EDD3;
+            border: 2px solid #F4EDD3;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 1rem;
             transition: background-color 0.3s, color 0.3s;
         }
         button:hover {
-            background-color: #ECDFCC;
-            color: #1b283b;
-            border: 2px solid #ECDFCC;
+            background-color: #F4EDD3;
+            color: #506a70;
+            border: 2px solid #F4EDD3;
         }
         </style>
         <script>
@@ -82,7 +82,7 @@
             <img src="static/dumbell2.png" style="width: 2.5rem; height: 2.5rem; margin-left: 2rem; margin-top: 3rem; transform: rotate(225deg);">
             <svg width="auto" height="auto" viewBox="0 0 100 25">
             <path id="arc" fill="transparent" d="M10,50 A40,40 0 0,1 90,50" />
-            <text font-size="0.7rem" fill="#ECDFCC" font-family="Trebuchet MS" font-weight="bold">
+            <text font-size="0.7rem" fill="#F4EDD3" font-family="Trebuchet MS" font-weight="bold">
                 <textPath href="#arc" startOffset="50%" text-anchor="middle">
                 PocketSpotter
                 </textPath>
@@ -99,12 +99,13 @@
                     const form = document.createElement('form');
                     form.setAttribute('onsubmit', 'event.preventDefault(); redirectToExercisePage();');
                     form.innerHTML = `
-                        <div class="dropdown" style="margin-top: 2rem; color: #ECDFCC; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 0.75rem;">
+                        <div class="dropdown" style="margin-top: 2rem; color: #F4EDD3; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 0.75rem;">
                             <label for="exercise" style="margin: 0 0.1rem;">Choose an exercise:</label>
                             <select id="exercise" name="exercise">
                                 <option value="BicepCurl">Bicep Curl</option>
                                 <option value="Benchpress">Bench Press</option>
-                            </select>
+                                <option value="Squat">Squat</option>
+                            </select>x
                         </div>
                         <div style="display: flex; justify-content: center;">
                             <button type="submit">Submit</button>
@@ -114,7 +115,7 @@
                 }
             </script>
     <footer>
-        <p style="color: #ECDFCC; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 0.75rem; text-align: center;">
+        <p style="color: #F4EDD3; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 0.75rem; text-align: center;">
             Created by from scratch in 24 hours for Deltahacks XI </br></br>
             View <a href="https://github.com/Kyle174/PocketSpotter"> source code</a>
         </p>
