@@ -10,9 +10,7 @@ counter = 0
 stage = None
 last_rep_time = 0
 
-
 def is_valid_form(hip_angle, knee_angle):
-    # Example relationship: If hip_angle decreases, knee_angle should decrease proportionally
     angle_difference = 18
     if (hip_angle - knee_angle) < angle_difference and (hip_angle - knee_angle) > -angle_difference:
         return True
@@ -57,6 +55,8 @@ def generate_frames():
             if not ret:
                 break
 
+            frame = cv2.flip(frame, 1)
+
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             image.flags.writeable = False
 
@@ -68,7 +68,6 @@ def generate_frames():
             try:
                 landmarks = results.pose_landmarks.landmark
 
-                # Check visibility for all required landmarks
                 required_landmarks = [
                     mp_pose.PoseLandmark.LEFT_HIP,
                     mp_pose.PoseLandmark.LEFT_SHOULDER,
@@ -76,9 +75,8 @@ def generate_frames():
                     mp_pose.PoseLandmark.LEFT_ANKLE
                 ]
                 if not all(landmarks[lm.value].visibility > 0.5 for lm in required_landmarks):
-                    cv2.putText(image, "Ensure full body is visible!", (50, 50),
-                                cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-                    # Skip this frame
+                    cv2.putText(image, "Ensure full body is visible!", (100, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5, cv2.LINE_AA)
+                    cv2.putText(image, "Ensure full body is visible!", (100, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
                     ret, buffer = cv2.imencode('.jpg', image)
                     if not ret:
                         break
@@ -86,20 +84,17 @@ def generate_frames():
                         b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
                     continue
 
-                # Get coordinates
                 hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
                 shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                 knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
                 ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
-                # Calculate angles
                 hip_angle = calculate_angle(shoulder, hip, knee, image)
                 knee_angle = calculate_angle(hip, knee, ankle, image)
 
-                # Check form validity and perform rep counting as usual
+                feedback = "Good form, keep it up!"
+                color = (0, 255, 0)
                 if not is_valid_form(hip_angle, knee_angle):
-                    feedback = ""
-                    color = (0, 255, 0)
                     if hip_angle < (18 + knee_angle):
                         feedback = "Don't lean too far forward!"
                         color = (0, 0, 255)
@@ -107,25 +102,24 @@ def generate_frames():
                         feedback = "Don't bend your knees as much!"
                         color = (0, 0, 255)
 
-                    cv2.putText(image, feedback, (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1, color, 2, cv2.LINE_AA)
+                    cv2.putText(image, feedback, (150, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0,0,0), 5, cv2.LINE_AA)
+                    cv2.putText(image, feedback, (150, 50), cv2.FONT_HERSHEY_DUPLEX, 1, color, 2, cv2.LINE_AA)
+
                 else:
                     if hip_angle > 160:
                         stage = "down"
                     if hip_angle < 68 and stage == 'down':
                         current_time = time.time()
                         if current_time - last_rep_time < 5:
-                            # Draw warning
                             pp1 = (565, 170) 
                             pp2 = (625, 170) 
                             pp3 = (595, 120) 
                             triangle = np.array([pp1, pp2, pp3], np.int32)
                             cv2.fillPoly(image, [triangle], (3, 186, 252))
                             cv2.polylines(image, [triangle], isClosed=True, color=(0, 0, 0), thickness=2)
-
-                            cv2.putText(image, '!', (588,163), 
-                                        cv2.FONT_HERSHEY_DUPLEX, 1.25, (0,0,0), 1, cv2.LINE_AA)
-                            cv2.putText(image, 'SLOW!', (572,190), 
-                                        cv2.FONT_HERSHEY_DUPLEX, 0.5, (3, 186, 252), 1, cv2.LINE_AA)
+                            cv2.putText(image, '!', (588,163), cv2.FONT_HERSHEY_DUPLEX, 1.25, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(image, 'SLOW!', (572,190), cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 0), 3, cv2.LINE_AA)
+                            cv2.putText(image, 'SLOW!', (572,190), cv2.FONT_HERSHEY_DUPLEX, 0.5, (3, 186, 252), 1, cv2.LINE_AA)
                         else:
                             stage = "up"
                             counter += 1
@@ -135,15 +129,15 @@ def generate_frames():
                 print(e)
 
 
-            cv2.rectangle(image, (545,0), (665, 105), (126,115,101), -1)
+            cv2.rectangle(image, (545,0), (665, 105), (51,51,51), -1)
             cv2.rectangle(image, (550,0), (650, 100), (186,173,167), -1)
-            
-            cv2.putText(image, 'REPS', (580,20), 
-                        cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(image, 'REPS', (575,20), cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
             if counter < 10:
-                cv2.putText(image, str(counter), (580,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (575,80), cv2.FONT_HERSHEY_DUPLEX, 2, (0,0,0), 5, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (575,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
             else:
-                cv2.putText(image, str(counter), (550,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (545,80), cv2.FONT_HERSHEY_DUPLEX, 2, (0,0,0), 5, cv2.LINE_AA)
+                cv2.putText(image, str(counter), (545,80), cv2.FONT_HERSHEY_DUPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
 
             ret, buffer = cv2.imencode('.jpg', image)
             if not ret:
