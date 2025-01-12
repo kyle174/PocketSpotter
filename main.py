@@ -76,22 +76,31 @@ def video_feed():
     
 @app.route('/end_set', methods=['POST'])
 def end_set():
-    """ 
+    """
     This endpoint updates the counter in the specific exercise module when a set ends.
     """
-    from services import Benchpress, BicepCurl  # Ensure we import the Benchpress module
+    from services import Benchpress, BicepCurl, Squat  # Ensure we import the modules for each exercise
 
     data = request.get_json()
     if data:
-        if data.get('exercise_type') == 'benchpress':
+        exercise_type = data.get('exercise_type')  # Get the exercise type from the request data
+        if exercise_type == 'benchpress':
             Benchpress.counter = 0  # Reset the counter for Bench Press
             print("Counter reset for Bench Press.")
             return "Success", 200
-        if data.get('exercise_type') == 'bicep_curl':
+        elif exercise_type == 'bicep_curl':
             BicepCurl.counter = 0  # Reset the counter for Bicep Curl
             print("Counter reset for Bicep Curl.")
             return "Success", 200
+        elif exercise_type == 'squat':
+            Squat.counter = 0  # Reset the counter for Squat
+            print("Counter reset for Squat.")
+            return "Success", 200
+        elif exercise_type == 'pushups':
+            print("Counter reset for Pushups.")
+            return "Success", 200
     return "Invalid Request", 400
+
 
 
 
