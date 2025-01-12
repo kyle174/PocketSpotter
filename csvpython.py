@@ -14,3 +14,5 @@ def log_rep_to_csv(file_path, exercise, rep_number, timestamp):
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([exercise, rep_number, timestamp,])
+
+

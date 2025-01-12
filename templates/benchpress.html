@@ -41,4 +41,42 @@
         <a href="/Pushups">Pushups</a>
     </div>
 </body>
+<script>
+    function toggleSet() {
+        var button = document.getElementById("toggleSetBtn");
+        if (button.innerHTML === "Start Set") {
+            document.querySelectorAll('#restBtn').forEach(e => e.remove());
+            button.innerHTML = "End Set";
+        } else {
+            document.querySelectorAll('#restBtn').forEach(e => e.remove());
+            button.innerHTML = "Start Set";
+            var restButton = document.createElement("button");
+            restButton.id = "restBtn";
+            restButton.innerHTML = "Start 2min Rest";
+            restButton.style = button.style.cssText;
+            restButton.onclick = startRestTimer;
+            button.parentNode.appendChild(restButton);
+        }
+    }
+
+    function startRestTimer() {
+        var restButton = document.getElementById("restBtn");
+        restButton.disabled = true;
+        var timer = 120;
+        var interval = setInterval(function() {
+            var minutes = Math.floor(timer / 60);
+            var seconds = timer % 60;
+            restButton.innerHTML = minutes + "m " + (seconds < 10 ? "0" : "") + seconds + "s";
+            timer--;
+            if (timer < 0) {
+                clearInterval(interval);
+                restButton.innerHTML = "Reset Timer";
+                restButton.disabled = false;
+            }
+        }, 1000);
+    }
+</script>
+<div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+    <button id="toggleSetBtn" onclick="toggleSet()">Start Set</button>
+</div>
 </html>
