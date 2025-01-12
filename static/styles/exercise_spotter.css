@@ -2,7 +2,7 @@ body {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans';
     margin: 0;
     padding: 0;
-    background-color: #1b283b;
+    background-color: #506a70;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,21 +14,83 @@ h1 {
     font-size: 2rem;
     margin-bottom: 1rem;
     color: #ECDFCC;
+    margin-top: 4rem;
 }
-
 .video-container {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 }
-
 nav {
-    margin-top: 20px;
+    background-color: #40585e;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    height: 2rem;
 }
-
-nav a {
+a {
     color: #ECDFCC;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; 
+    font-size: 1rem;
     text-decoration: none;
     padding: 50px;
+}
+nav-links{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hamburger-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    background-color: 1b283b;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    background-color: #40585e;
+}
+
+.hamburger-menu a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #ECDFCC;
+    display: block;
+    transition: 0.3s;
+}
+
+.hamburger-menu a:hover {
+    color: #f1f1f1;
+}
+
+.hamburger-menu .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #40585e;
+    color: #ECDFCC;
+    border: none;
+    padding: 10px 15px;
+}
+
+.openbtn.hidden {
+    display: none;
 }
