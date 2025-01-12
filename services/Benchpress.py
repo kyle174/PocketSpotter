@@ -10,7 +10,6 @@ mp_pose = mp.solutions.pose
 counter = 0
 stage = None
 last_rep_time = 0
-inbalanced_state = 0
 
 def calculate_angle(a, b, c, image):
     h, w, _ = image.shape  
@@ -41,7 +40,7 @@ def calculate_angle(a, b, c, image):
     return angle
 
 def generate_frames():
-    global counter, stage, last_rep_time, inbalanced_state
+    global counter, stage, last_rep_time
     left_angles = []
     right_angles = []
 
@@ -97,17 +96,18 @@ def generate_frames():
                 right_angles.append(right_angle)
 
                 feedback = ""
-                color = (0, 0, 255)
+                color = (0, 255, 0)
                 if len(left_angles) > 10 and len(right_angles) > 10:
                     left_mean = statistics.mean(left_angles[-10:])
                     right_mean = statistics.mean(right_angles[-10:])
-                    
-                    if abs(left_mean - right_mean) > 25 and inbalanced_state == 0:
-                        feedback = "Incorrect form detected: Left and right angles differ by more than 25 degrees"
-                        inbalanced_state = 1 
-                    elif abs(left_mean - right_mean) <= 25 and inbalanced_state == 1:
-                        inbalanced_state = 0  
+                    if abs(left_mean - right_mean) > 25:
+                        feedback = "Keep it balanced!"
+                        color = (0, 0, 255)
+                    elif abs(left_mean - right_mean) <= 25:
+                        feedback = "Good form, keep it up!"
+                        color = (0, 255, 0)
 
+                cv2.putText(image, feedback, (150, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0,0,0), 5, cv2.LINE_AA)
                 cv2.putText(image, feedback, (150, 50), cv2.FONT_HERSHEY_DUPLEX, 1, color, 2, cv2.LINE_AA)
                 
                 if left_angle > 150 and right_angle > 150 and stage != "up":
@@ -117,7 +117,7 @@ def generate_frames():
                     start_time = time.time() 
                 if left_angle > 150 and right_angle > 150 and stage == "up":
                     current_time = time.time()
-                    if current_time - last_rep_time < 2.5:
+                    if current_time - last_rep_time < 3:
                         pp1 = (565, 170) 
                         pp2 = (625, 170) 
                         pp3 = (595, 120) 
