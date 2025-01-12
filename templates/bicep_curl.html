@@ -3,17 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketSpotter</title>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/exercise_spotter.css') }}">
+    <title>PocketSpotter - Bicep Curl</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/exercise_spotter.css') }}">
     <script>
+        let videoStream;
+
+        async function startCamera() {
+            try {
+                const video = document.getElementById('video');
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = videoStream;
+
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+
+                setInterval(() => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    const frame = canvas.toDataURL('image/jpeg'); // Convert frame to Base64
+                    sendFrameToServer(frame);
+                }, 100); // Capture frame every 100ms
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Please allow camera access to use this feature.');
+            }
+        }
+
+        async function sendFrameToServer(frame) {
+            try {
+                const response = await fetch('/video_feed', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ frame })
+                });
+                const result = await response.json();
+                if (result.status !== 'success') {
+                    console.error('Error processing frame:', result.message);
+                }
+            } catch (error) {
+                console.error('Error sending frame:', error);
+            }
+        }
+
+        window.onload = startCamera;
+
         function openNav() {
             document.getElementById("myNav").style.width = "250px";
-            document.getElementById("openBtn").classList.add("hidden"); // Hide the "Exercises" button
+            document.getElementById("openBtn").classList.add("hidden");
         }
 
         function closeNav() {
             document.getElementById("myNav").style.width = "0";
-            document.getElementById("openBtn").classList.remove("hidden"); // Show the "Exercises" button
+            document.getElementById("openBtn").classList.remove("hidden");
         }
     </script>
 </head>
@@ -22,16 +65,16 @@
         <div class="nav-links">
             <a href="/">🏠︎ Home</a>
         </div>
-        
-        <button id="openBtn" class="openbtn" onclick="openNav()" style="color: #ECDFCC; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 1rem; text-align: center;">Exercises ☰</button>
+        <button id="openBtn" class="openbtn" onclick="openNav()">Exercises ☰</button>
     </nav>
     <div style="display: flex; align-items: center; justify-content: center;">
-        <img src="static/dumbell2.png" style="width: 2.5rem; height: 2.5rem; margin-left: 2rem; margin-right: 1rem; margin-top: 3rem; transform: rotate(225deg);">
+        <img src="static/dumbell2.png" style="width: 2.5rem; transform: rotate(225deg); margin-top: 2rem;">
         <h1>Bicep Curl Spotter</h1>
-        <img src="static/dumbell2.png" style="width: 2.5rem; height: 2.5rem; margin-right: 2rem; margin-left: 1rem; margin-top: 3rem; transform: rotate(-45deg);">
+        <img src="static/dumbell2.png" style="width: 2.5rem; transform: rotate(-45deg); margin-top: 2rem;">
     </div>
     <div class="video-container">
-        <img src="{{ url_for('video_feed') }}" alt="Video Stream">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" style="display: none;"></canvas>
     </div>
     <div id="myNav" class="hamburger-menu">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
