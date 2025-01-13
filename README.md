@@ -29,8 +29,66 @@ PocketSpotter is a cutting-edge fitness assistant that uses computer vision to p
 * Feedback Mechanism: Based on the joint angles and timing, feedback is displayed to guide the user on form and pace.
 * CSV Logging: Logs workout data (e.g., reps and timestamps) for future analysis.
 
-## Usage
-1. Ensure your webcam is connected and positioned to capture your full body.
-2. Navigate to the app's homepage and select an exercise.
-3. Follow the on-screen instructions to start your workout.
-4. View real-time feedback, rep count, and pacing alerts on the screen.
+## How to Run  
+
+Follow these steps to set up and run the project locally:  
+
+### 1. Clone the Repository  
+First, clone the repository to your local machine:  
+```bash
+git clone git@github.com:kyle174/PocketSpotter.git
+```
+### 2. Create a Virtual Environment
+
+It’s recommended to use a virtual environment to manage dependencies
+
+```bash
+
+python -m venv venv
+
+```
+Activate the virtual environment:
+
+* On Windows:
+```bash
+
+venv\Scripts\activate
+
+```
+
+* On Mac:
+```bash
+
+source venv/bin/activate
+
+```
+
+### 3. Install Dependencies
+
+Install all required Python packages using pip:
+
+```bash
+
+pip install flask mediapipe opencv-python numpy
+
+```
+### 4. Run the Flask Application
+
+Start the Flask server to launch the application:
+
+```bash
+
+python main.py
+
+```
+
+### 5. Access the Application
+
+Open your browser and navigate to:
+
+```bash
+
+http://127.0.0.1:5000/
+
+```
+
